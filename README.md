@@ -29,18 +29,19 @@ $ cd election
 $ npm install
 ```
 
+
+#### `$ npm run start`
+Runs your app in development mode with prettier and tests in order to assure code quality.
+
+#### `$ npm run prettier`
+[Prettier](https://github.com/prettier/prettier) is an opinionated code formatter. It enforces a consistent style by parsing your code and re-printing it with its own rules that take the maximum line length into account, wrapping code when necessary.
+Rules can be found in `pakage.json`
+
 #### `$ truffle test`
 To run test bundled Mocha and Chai tests.
 
 #### `$ truffle migrate --reset`
 Smart contract needs to be migrated each time ganache is restarted.
-
-#### `$ npm run start`
-
-#### `npm run prettier`
-
-[Prettier](https://github.com/prettier/prettier) is an opinionated code formatter. It enforces a consistent style by parsing your code and re-printing it with its own rules that take the maximum line length into account, wrapping code when necessary.
-Rules can be found in `pakage.json`
 
 ## License
 

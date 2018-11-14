@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "start": "npm run prettier && webpack-dev-server --open",
+    "start": "npm run prettier && truffle test &&  webpack-dev-server --open",
     "build": "webpack",
     "prettier": "prettier --write '**/*.js'",
     "test": "echo \"Error: no test specified\" && exit 1"
