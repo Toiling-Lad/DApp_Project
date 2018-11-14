@@ -1,5 +1,12 @@
 ## DApp_Project
 
+## Table of Contents
+
+* [ Motivation](#motivation)
+* [ Dependencies ](#dependencies)
+* [ Getting Started ](#getting-started)
+* [ License ](#license)
+
 ## Motivation
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum
 
@@ -24,7 +31,7 @@ $ npm install
 To run test bundled Mocha and Chai tests.
 
 #### `$ truffle migrate --reset`
-Election smart contract needs to be migrated each time ganache is restarted.
+Smart contract needs to be migrated each time ganache is restarted.
 
 #### `$ npm run dev`
 
