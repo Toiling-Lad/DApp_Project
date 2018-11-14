@@ -1,5 +1,7 @@
 ## DApp_Project
 
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
+
 ## Table of Contents
 
 * [ Motivation](#motivation)
@@ -33,8 +35,12 @@ To run test bundled Mocha and Chai tests.
 #### `$ truffle migrate --reset`
 Smart contract needs to be migrated each time ganache is restarted.
 
-#### `$ npm run dev`
+#### `$ npm run start`
 
+#### `npm run prettier`
+
+[Prettier](https://github.com/prettier/prettier) is an opinionated code formatter. It enforces a consistent style by parsing your code and re-printing it with its own rules that take the maximum line length into account, wrapping code when necessary.
+Rules can be found in `pakage.json`
 
 ## License
 
