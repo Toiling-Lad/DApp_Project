@@ -10,7 +10,24 @@
 * [ License ](#license)
 
 ## Motivation
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum
+Flight delay/cancellation insurance Dapp
+
+Develop a Dapp that manages insurance for travelers. Through a web front-end, a traveler should be able to:
+
+- Buy insurance submitting legitimate ticket evidence. Static prices are SGD$30 or 150 loyalty points when round-trip tickets, SGD$20 or 100 points when one-way ticket.
+- Payment could be made by integration in-time with Metamask or Mist Ethereum wallet using tokens.
+- Loyalty program. Every time a traveler buys insurance, he/she gets points: 30 points for a round trip ticket insurance, and 10 points otherwise.
+- Claim money back under following rules. Only the traveler triggers this action.
+  - If flight only delayed, the traveler gets SGD$200
+  - If flights canceled, the traveler receives SDG$5,000
+  - If a traveler got money when the flight was delayed but it turns out to be canceled, he/she can get the remainder SGD$4,800.
+
+The Dapp should perform the following tasks automatically.
+
+- Get the correct rate or conversion SGD/ETH for calculating the correct value to pay in Ethers at the transaction moment.
+- Read, analyzed, and extract tickets data. Consider reading PDF or images with QR codes
+- Request information about flights existence and status to a legitimate data source (e.g., Changi Airport) through a contract to contract communication.
+
 
 ## Dependencies
 - NPM: https://nodejs.org
