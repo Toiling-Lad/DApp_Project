@@ -60,13 +60,14 @@ contract Insurance {
         if (profile[msg.sender].points < costLP) return false;
 
         types[insuranceId].active = true;
+        profile[msg.sender].activeInsurance = true;
         profile[msg.sender].points -= costLP;
 
         emit TransferLP(msg.sender, insuranceId);
         return true;
     }
 
-    function claim (address receiver, bool activeInsurance, bool delayed, bool canceled) public returns(bool sufficient){
+    function claim (int insuranceId, address receiver, bool activeInsurance, bool delayed, bool canceled) public returns(bool sufficient){
         if (!profile[msg.sender].activeInsurance) return false;
         
         if (delayed) {
@@ -77,6 +78,7 @@ contract Insurance {
             profile[receiver].balance -= 5000;
         }
 
+        types[insuranceId].active = false;
         profile[msg.sender].activeInsurance = false;
         // emit TransferLP(msg.sender, insuranceId);
         return true;

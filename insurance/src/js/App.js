@@ -4,6 +4,7 @@ import Web3 from 'web3'
 import TruffleContract from 'truffle-contract'
 import Insurance from '../../build/contracts/Insurance.json'
 import Content from './Content'
+import axios from 'axios'
 import 'bootstrap/dist/css/bootstrap.css'
 
 class App extends React.Component {
@@ -12,6 +13,7 @@ class App extends React.Component {
     this.state = {
       account: '0x0',
       insurances: [],
+      flights: [],
       loading: true,
       points: 0,
       activeInsurance: false,
@@ -36,7 +38,41 @@ class App extends React.Component {
 
     this.buyWithSGD = this.buyWithSGD.bind(this)
     this.buyWithLP = this.buyWithLP.bind(this)
+    this.propsToState = this.propsToState.bind(this)
     this.claim = this.claim.bind(this)
+  }
+
+  propsToState(insurance) {
+    this.insurance = insurance
+    for (var i = 1; i <= this.state.insuranceTypes; i++) {
+      this.insurance.types(i).then(insurance => {
+        const array = [...this.state.insurances]
+        array.push({
+          insuranceId: insurance[0],
+          name: insurance[1],
+          awardLP: insurance[2],
+          costSGD: insurance[3],
+          costLP: insurance[4],
+          info: insurance[5],
+          active: insurance[6]
+        })
+        this.setState({ insurances: array })
+      })
+    }
+
+    this.insurance.profile(this.state.account).then(profile => {
+      this.setState({
+        points: profile[0].toNumber(),
+        balance: profile[1].toNumber(),
+        activeInsurance: profile[2]
+      })
+    })
+    this.insurance.profile(this.state.bankAccount).then(profile => {
+      this.setState({
+        bankAccountBalance: profile[1].toNumber()
+      })
+    })
+    this.setState({ loading: false })
   }
 
   componentDidMount() {
@@ -44,37 +80,13 @@ class App extends React.Component {
       this.web3.eth.getCoinbase((err, account) => {
         this.setState({ account })
         this.insurance.deployed().then(insurance => {
-          this.insurance = insurance
-          for (var i = 1; i <= this.state.insuranceTypes; i++) {
-            this.insurance.types(i).then(insurance => {
-              const array = [...this.state.insurances]
-              array.push({
-                insuranceId: insurance[0],
-                name: insurance[1],
-                awardLP: insurance[2],
-                costSGD: insurance[3],
-                costLP: insurance[4],
-                info: insurance[5],
-                active: insurance[6]
-              })
-              this.setState({ insurances: array })
-            })
-          }
-
-          this.insurance.profile(this.state.account).then(profile => {
-            this.setState({
-              points: profile[0].toNumber(),
-              balance: profile[1].toNumber(),
-              activeInsurance: profile[2]
-            })
-          })
-          this.insurance.profile(this.state.bankAccount).then(profile => {
-            this.setState({
-              bankAccountBalance: profile[1].toNumber()
-            })
-          })
-          this.setState({ loading: false })
+          this.propsToState(insurance)
         })
+      })
+
+      axios.get(`https://jsonplaceholder.typicode.com/users`).then(res => {
+        const flights = res.data
+        this.setState({ flights })
       })
     } catch (error) {
       console.log(error)
@@ -99,11 +111,18 @@ class App extends React.Component {
       })
   }
 
-  claim(activeInsurance, delayed, cancelled) {
+  claim(insuranceId, activeInsurance, delayed, cancelled) {
     this.insurance
-      .claim(this.state.bankAccount, activeInsurance, delayed, cancelled, {
-        from: this.state.account
-      })
+      .claim(
+        insuranceId,
+        this.state.bankAccount,
+        activeInsurance,
+        delayed,
+        cancelled,
+        {
+          from: this.state.account
+        }
+      )
       .catch(error => {
         console.log(error)
       })
@@ -120,13 +139,13 @@ class App extends React.Component {
           ) : (
             <Content
               account={this.state.account}
-              bankAccountBalance={this.state.bankAccountBalance}
               points={this.state.points}
               insurances={this.state.insurances}
               activeInsurance={this.state.activeInsurance}
               buyWithSGD={this.buyWithSGD}
               buyWithLP={this.buyWithLP}
               balance={this.state.balance}
+              flights={this.state.flights}
               claim={this.claim}
             />
           )}

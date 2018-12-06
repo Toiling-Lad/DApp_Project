@@ -32,6 +32,20 @@ class Table extends React.Component {
     )
   }
 
+  buttonClaim(insuranceId, activeInsurance, delayed, cancelled) {
+    return (
+      <button
+        type="submit"
+        class="btn btn-primary"
+        onClick={click => {
+          click.preventDefault(),
+            this.props.claim(insuranceId, activeInsurance, delayed, cancelled)
+        }}>
+        claim
+      </button>
+    )
+  }
+
   render() {
     let rows = []
 
@@ -43,13 +57,27 @@ class Table extends React.Component {
           <td>{element.active.toString()}</td>
           <td>{element.active.toString()}</td>
           <td>
-            {this.buttonSGD(
-              element.insuranceId,
-              element.awardLP,
-              element.costSGD
-            )}
+            {!this.props.activeInsurance
+              ? this.buttonSGD(
+                  element.insuranceId,
+                  element.awardLP,
+                  element.costSGD
+                )
+              : null}
           </td>
-          <td>{this.buttonLP(element.insuranceId, element.costLP)}</td>
+          {this.props.points >= element.costLP ? (
+            <td>{this.buttonLP(element.insuranceId, element.costLP)}</td>
+          ) : null}
+          {element.active ? (
+            <td>
+              {this.buttonClaim(
+                element.insuranceId,
+                element.active,
+                true,
+                false
+              )}
+            </td>
+          ) : null}
         </tr>
       )
     })
