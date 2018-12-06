@@ -68,6 +68,7 @@ class Table extends React.Component {
           {this.props.points >= element.costLP ? (
             <td>{this.buttonLP(element.insuranceId, element.costLP)}</td>
           ) : null}
+
           {element.active ? (
             <td>
               {this.buttonClaim(
@@ -78,6 +79,7 @@ class Table extends React.Component {
               )}
             </td>
           ) : null}
+          
         </tr>
       )
     })

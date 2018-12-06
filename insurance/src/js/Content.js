@@ -7,8 +7,8 @@ class Content extends React.Component {
     return (
       <div>
         <p>Your account: {this.props.account}</p>
-        <p>Balance: {this.props.balance}</p>
-        <p>Accumulated Loyalty Points (LP): {this.props.points}</p>
+        <p>Balance SGD: {this.props.balance}</p>
+        <p>Loyalty Points (LP): {this.props.points}</p>
         {this.props.insurances.length && (
           <Table
             insurances={this.props.insurances}
