@@ -90,11 +90,11 @@ class App extends React.Component {
   buy(insuranceId, points, amount) {
     this.insurance.buy(
         insuranceId, 
-        amount, 
+        this.state.bankAccount, 
         points,
-        this.state.bankAccount, {
-        from: this.state.account
-      })
+        amount, 
+        {from: this.state.account}
+      )
       .then(() => {
         alert('Transaction successful!')
       })

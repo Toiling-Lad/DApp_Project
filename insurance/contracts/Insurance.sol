@@ -2,29 +2,29 @@ pragma solidity ^0.4.24;
 
 contract Insurance {
     struct FlightInsurance {
-        uint id;
+        int id;
         string name;
         bool active;
-        uint points;
+        int points;
         string cost;
-        uint amount;
+        int amount;
     }
 
     struct Profile {
-        uint points;
-        uint balance;
+        int points;
+        int balance;
     }
 
-    mapping(uint => FlightInsurance) public types;
+    mapping(int => FlightInsurance) public types;
     mapping(address => Profile) public profile;
 
-    uint public insuranceTypesCount;
+    int public insuranceTypesCount;
 
     event Transfer(
         address indexed _from, 
         address indexed _to, 
-        uint256 _value,
-        uint indexed _insuranceId
+        int _value,
+        int indexed _insuranceId
     );
 
     constructor() public {
@@ -32,22 +32,20 @@ contract Insurance {
         addInsurance("Round-Trip", 30, "SGD$30 or LP150", 30);
     }
 
-    function addInsurance (string _name, uint _points, string _cost, uint _amount) private {
+    function addInsurance (string name, int points, string cost, int amount) private {
         insuranceTypesCount ++;
-        types[insuranceTypesCount] = FlightInsurance(insuranceTypesCount, _name, false, _points, _cost, _amount);
+        types[insuranceTypesCount] = FlightInsurance(insuranceTypesCount, name, false, points, cost, amount);
     }
 
-    function buy (uint _insuranceId, address receiver, uint amount, uint points) public returns(bool sufficient) {
+    function buy (int _insuranceId, address receiver, int points, int amount) public{
 
         types[_insuranceId].active = true;
 
-
         // if (profile[msg.sender].balance < amount) return false;
-        profile[msg.sender].balance -= amount;
         profile[msg.sender].points += points;
+        profile[msg.sender].balance -= amount;
         // profile[receiver] += amount;
 
         emit Transfer(msg.sender, receiver, amount, _insuranceId);
-        return true;
     }
 }
