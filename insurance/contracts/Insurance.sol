@@ -14,6 +14,7 @@ contract Insurance {
     struct Profile {
         int points;
         int balance;
+        bool activeInsurance;
     }
 
     mapping(int => FlightInsurance) public types;
@@ -46,9 +47,10 @@ contract Insurance {
     function buyWithSGD (int insuranceId, address receiver, int awardLP, int costSGD) public returns(bool sufficient){
         // if (profile[msg.sender].balance < costSGD) return false;
         types[insuranceId].active = true;
+        profile[msg.sender].activeInsurance = true;
         profile[msg.sender].points += awardLP;
         profile[msg.sender].balance -= costSGD;
-        // profile[receiver] += costSGD;
+        profile[receiver].balance += costSGD;
 
         emit TransferSGD(msg.sender, receiver, costSGD, insuranceId);
         return true;
@@ -61,6 +63,22 @@ contract Insurance {
         profile[msg.sender].points -= costLP;
 
         emit TransferLP(msg.sender, insuranceId);
+        return true;
+    }
+
+    function claim (address receiver, bool activeInsurance, bool delayed, bool canceled) public returns(bool sufficient){
+        if (!profile[msg.sender].activeInsurance) return false;
+        
+        if (delayed) {
+            profile[msg.sender].balance += 200;
+            profile[receiver].balance -= 200;
+        } else if (canceled) { 
+            profile[msg.sender].balance += 5000;
+            profile[receiver].balance -= 5000;
+        }
+
+        profile[msg.sender].activeInsurance = false;
+        // emit TransferLP(msg.sender, insuranceId);
         return true;
     }
 }

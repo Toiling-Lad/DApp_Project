@@ -12,12 +12,13 @@ class App extends React.Component {
     this.state = {
       account: '0x0',
       insurances: [],
-      bought: false,
       loading: true,
       points: 0,
+      activeInsurance: false,
       insuranceTypes: 2,
       balance: 0,
-      bankAccount: '0xf17f52151ebef6c7334fad080c5704d77216b732'
+      bankAccount: '0xf17f52151ebef6c7334fad080c5704d77216b732',
+      bankAccountBalance: 0
     }
 
     if (typeof web3 != 'undefined') {
@@ -35,6 +36,7 @@ class App extends React.Component {
 
     this.buyWithSGD = this.buyWithSGD.bind(this)
     this.buyWithLP = this.buyWithLP.bind(this)
+    this.claim = this.claim.bind(this)
   }
 
   componentDidMount() {
@@ -53,7 +55,7 @@ class App extends React.Component {
                 costSGD: insurance[3],
                 costLP: insurance[4],
                 info: insurance[5],
-                active: insurance[6],
+                active: insurance[6]
               })
               this.setState({ insurances: array })
             })
@@ -62,7 +64,13 @@ class App extends React.Component {
           this.insurance.profile(this.state.account).then(profile => {
             this.setState({
               points: profile[0].toNumber(),
-              balance: profile[1].toNumber()
+              balance: profile[1].toNumber(),
+              activeInsurance: profile[2]
+            })
+          })
+          this.insurance.profile(this.state.bankAccount).then(profile => {
+            this.setState({
+              bankAccountBalance: profile[1].toNumber()
             })
           })
           this.setState({ loading: false })
@@ -91,6 +99,16 @@ class App extends React.Component {
       })
   }
 
+  claim(activeInsurance, delayed, cancelled) {
+    this.insurance
+      .claim(this.state.bankAccount, activeInsurance, delayed, cancelled, {
+        from: this.state.account
+      })
+      .catch(error => {
+        console.log(error)
+      })
+  }
+
   render() {
     return (
       <div class="row">
@@ -102,9 +120,10 @@ class App extends React.Component {
           ) : (
             <Content
               account={this.state.account}
-              bankAccount={this.state.bankAccount}
+              bankAccountBalance={this.state.bankAccountBalance}
               points={this.state.points}
               insurances={this.state.insurances}
+              activeInsurance={this.state.activeInsurance}
               buyWithSGD={this.buyWithSGD}
               buyWithLP={this.buyWithLP}
               balance={this.state.balance}

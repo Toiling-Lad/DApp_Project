@@ -8,7 +8,11 @@ class Table extends React.Component {
         class="btn btn-primary"
         onClick={click => {
           click.preventDefault(),
-            this.props.buyWithSGD(insuranceId, points.toNumber(), amount.toNumber())
+            this.props.buyWithSGD(
+              insuranceId,
+              points.toNumber(),
+              amount.toNumber()
+            )
         }}>
         SGD
       </button>
@@ -20,7 +24,8 @@ class Table extends React.Component {
         type="submit"
         class="btn btn-primary"
         onClick={click => {
-          click.preventDefault(), this.props.buyWithLP(insuranceId, costLP.toNumber())
+          click.preventDefault(),
+            this.props.buyWithLP(insuranceId, costLP.toNumber())
         }}>
         LP
       </button>
@@ -37,7 +42,13 @@ class Table extends React.Component {
           <td>{element.info.toString()}</td>
           <td>{element.active.toString()}</td>
           <td>{element.active.toString()}</td>
-          <td>{this.buttonSGD(element.insuranceId, element.awardLP, element.costSGD)}</td>
+          <td>
+            {this.buttonSGD(
+              element.insuranceId,
+              element.awardLP,
+              element.costSGD
+            )}
+          </td>
           <td>{this.buttonLP(element.insuranceId, element.costLP)}</td>
         </tr>
       )
