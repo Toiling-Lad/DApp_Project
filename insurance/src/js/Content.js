@@ -8,11 +8,11 @@ class Content extends React.Component {
         <p>Your account: {this.props.account}</p>
         <p>Balance: {this.props.balance}</p>
         <p>Accumulated Loyalty Points (LP): {this.props.points}</p>
-        <p>Ethereum conversion rate :</p>
         {this.props.insurances.length && (
           <Table
             insurances={this.props.insurances}
-            buy={this.props.buy}
+            buyWithSGD={this.props.buyWithSGD}
+            buyWithLP={this.props.buyWithLP}
             claim={this.props.claim}
           />
         )}

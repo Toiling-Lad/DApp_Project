@@ -17,7 +17,7 @@ class App extends React.Component {
       points: 0,
       insuranceTypes: 2,
       balance: 0,
-      bankAccount: "0xf17f52151ebef6c7334fad080c5704d77216b732"
+      bankAccount: '0xf17f52151ebef6c7334fad080c5704d77216b732'
     }
 
     if (typeof web3 != 'undefined') {
@@ -33,8 +33,8 @@ class App extends React.Component {
     this.insurance = TruffleContract(Insurance)
     this.insurance.setProvider(this.web3Provider)
 
-    this.buy = this.buy.bind(this)
-    this.watchEvents = this.watchEvents.bind(this)
+    this.buyWithSGD = this.buyWithSGD.bind(this)
+    this.buyWithLP = this.buyWithLP.bind(this)
   }
 
   componentDidMount() {
@@ -43,17 +43,17 @@ class App extends React.Component {
         this.setState({ account })
         this.insurance.deployed().then(insurance => {
           this.insurance = insurance
-          this.watchEvents()
           for (var i = 1; i <= this.state.insuranceTypes; i++) {
             this.insurance.types(i).then(insurance => {
               const array = [...this.state.insurances]
               array.push({
-                id: insurance[0],
+                insuranceId: insurance[0],
                 name: insurance[1],
-                active: insurance[2],
-                points: insurance[3],
-                cost: insurance[4],
-                amount: insurance[5]
+                awardLP: insurance[2],
+                costSGD: insurance[3],
+                costLP: insurance[4],
+                info: insurance[5],
+                active: insurance[6],
               })
               this.setState({ insurances: array })
             })
@@ -73,34 +73,22 @@ class App extends React.Component {
     }
   }
 
-  watchEvents() {
+  buyWithSGD(insuranceId, awardLP, costSGD) {
     this.insurance
-      .Transfer(
-        {},
-        {
-          fromBlock: 0,
-          toBlock: 'latest'
-        }
-      )
-      .watch((error, event) => {
+      .buyWithSGD(insuranceId, this.state.bankAccount, awardLP, costSGD, {
+        from: this.state.account
+      })
+      .catch(error => {
         console.log(error)
       })
   }
 
-  buy(insuranceId, points, amount) {
-    this.insurance.buy(
-        insuranceId, 
-        this.state.bankAccount, 
-        points,
-        amount, 
-        {from: this.state.account}
-      )
-      .then(() => {
-        alert('Transaction successful!')
-      })
+  buyWithLP(insuranceId, costLP) {
+    this.insurance
+      .buyWithLP(insuranceId, costLP, { from: this.state.account })
       .catch(error => {
         console.log(error)
-    })
+      })
   }
 
   render() {
@@ -117,7 +105,8 @@ class App extends React.Component {
               bankAccount={this.state.bankAccount}
               points={this.state.points}
               insurances={this.state.insurances}
-              buy={this.buy}
+              buyWithSGD={this.buyWithSGD}
+              buyWithLP={this.buyWithLP}
               balance={this.state.balance}
               claim={this.claim}
             />

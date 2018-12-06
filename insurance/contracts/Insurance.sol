@@ -2,12 +2,13 @@ pragma solidity ^0.4.24;
 
 contract Insurance {
     struct FlightInsurance {
-        int id;
+        int insuranceId;
         string name;
+        int awardLP;
+        int costSGD;
+        int costLP;
+        string info;
         bool active;
-        int points;
-        string cost;
-        int amount;
     }
 
     struct Profile {
@@ -20,32 +21,46 @@ contract Insurance {
 
     int public insuranceTypesCount;
 
-    event Transfer(
+    event TransferSGD(
         address indexed _from, 
         address indexed _to, 
         int _value,
-        int indexed _insuranceId
+        int indexed insuranceinsuranceId
+    );
+
+    event TransferLP(
+        address indexed _from, 
+        int indexed insuranceinsuranceId
     );
 
     constructor() public {
-        addInsurance("One-Way", 10, "SGD$20 or LP100", 20);
-        addInsurance("Round-Trip", 30, "SGD$30 or LP150", 30);
+        addInsurance("One-Way", 10, 20, 100, "SGD$20 or LP100");
+        addInsurance("Round-Trip", 30, 30, 150, "SGD$30 or LP150");
     }
 
-    function addInsurance (string name, int points, string cost, int amount) private {
+    function addInsurance (string name, int awardLP, int costSGD, int costLP, string info) private {
         insuranceTypesCount ++;
-        types[insuranceTypesCount] = FlightInsurance(insuranceTypesCount, name, false, points, cost, amount);
+        types[insuranceTypesCount] = FlightInsurance(insuranceTypesCount, name, awardLP, costSGD, costLP, info, false);
     }
 
-    function buy (int _insuranceId, address receiver, int points, int amount) public{
+    function buyWithSGD (int insuranceId, address receiver, int awardLP, int costSGD) public returns(bool sufficient){
+        // if (profile[msg.sender].balance < costSGD) return false;
+        types[insuranceId].active = true;
+        profile[msg.sender].points += awardLP;
+        profile[msg.sender].balance -= costSGD;
+        // profile[receiver] += costSGD;
 
-        types[_insuranceId].active = true;
+        emit TransferSGD(msg.sender, receiver, costSGD, insuranceId);
+        return true;
+    }
 
-        // if (profile[msg.sender].balance < amount) return false;
-        profile[msg.sender].points += points;
-        profile[msg.sender].balance -= amount;
-        // profile[receiver] += amount;
+    function buyWithLP (int insuranceId, int costLP) public returns(bool sufficient){
+        if (profile[msg.sender].points < costLP) return false;
 
-        emit Transfer(msg.sender, receiver, amount, _insuranceId);
+        types[insuranceId].active = true;
+        profile[msg.sender].points -= costLP;
+
+        emit TransferLP(msg.sender, insuranceId);
+        return true;
     }
 }

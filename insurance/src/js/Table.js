@@ -1,15 +1,28 @@
 import React from 'react'
 
 class Table extends React.Component {
-  button(id, points, amount) {
+  buttonSGD(insuranceId, points, amount) {
     return (
       <button
         type="submit"
         class="btn btn-primary"
         onClick={click => {
-          click.preventDefault(), this.props.buy(id, points.toNumber(), amount.toNumber())
+          click.preventDefault(),
+            this.props.buyWithSGD(insuranceId, points.toNumber(), amount.toNumber())
         }}>
-        Purchase
+        SGD
+      </button>
+    )
+  }
+  buttonLP(insuranceId, costLP) {
+    return (
+      <button
+        type="submit"
+        class="btn btn-primary"
+        onClick={click => {
+          click.preventDefault(), this.props.buyWithLP(insuranceId, costLP.toNumber())
+        }}>
+        LP
       </button>
     )
   }
@@ -21,10 +34,11 @@ class Table extends React.Component {
       rows.push(
         <tr>
           <td>{element.name}</td>
-          <td>{element.cost.toString()}</td>
+          <td>{element.info.toString()}</td>
           <td>{element.active.toString()}</td>
           <td>{element.active.toString()}</td>
-          <td>{this.button(element.id, element.points, element.amount)}</td>
+          <td>{this.buttonSGD(element.insuranceId, element.awardLP, element.costSGD)}</td>
+          <td>{this.buttonLP(element.insuranceId, element.costLP)}</td>
         </tr>
       )
     })
@@ -37,7 +51,7 @@ class Table extends React.Component {
             <th>Cost</th>
             <th>Active</th>
             <th>Flight Delayed</th>
-            <th>Option</th>
+            <th>Payment</th>
           </tr>
         </thead>
         <tbody>{rows}</tbody>
