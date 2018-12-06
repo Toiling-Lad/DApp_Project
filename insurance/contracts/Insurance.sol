@@ -15,6 +15,7 @@ contract Insurance {
         int points;
         int balance;
         bool activeInsurance;
+        string flightId;
     }
 
     mapping(int => FlightInsurance) public types;
@@ -44,30 +45,32 @@ contract Insurance {
         types[insuranceTypesCount] = FlightInsurance(insuranceTypesCount, name, awardLP, costSGD, costLP, info, false);
     }
 
-    function buyWithSGD (int insuranceId, address receiver, int awardLP, int costSGD) public returns(bool sufficient){
+    function buyWithSGD (int insuranceId, address receiver, int awardLP, int costSGD, string flightId) public returns(bool sufficient){
         // if (profile[msg.sender].balance < costSGD) return false;
         types[insuranceId].active = true;
         profile[msg.sender].activeInsurance = true;
         profile[msg.sender].points += awardLP;
         profile[msg.sender].balance -= costSGD;
+        profile[msg.sender].flightId = flightId;
         profile[receiver].balance += costSGD;
 
         emit TransferSGD(msg.sender, receiver, costSGD, insuranceId);
         return true;
     }
 
-    function buyWithLP (int insuranceId, int costLP) public returns(bool sufficient){
+    function buyWithLP (int insuranceId, int costLP, string flightId) public returns(bool sufficient){
         if (profile[msg.sender].points < costLP) return false;
 
         types[insuranceId].active = true;
         profile[msg.sender].activeInsurance = true;
         profile[msg.sender].points -= costLP;
+        profile[msg.sender].flightId = flightId;
 
         emit TransferLP(msg.sender, insuranceId);
         return true;
     }
 
-    function claim (int insuranceId, address receiver, bool activeInsurance, bool delayed, bool canceled) public returns(bool sufficient){
+    function claim (int insuranceId, address receiver, bool activeInsurance, bool delayed, bool canceled, string flightId) public returns(bool sufficient){
         if (!profile[msg.sender].activeInsurance) return false;
         
         if (delayed) {
@@ -80,6 +83,7 @@ contract Insurance {
 
         types[insuranceId].active = false;
         profile[msg.sender].activeInsurance = false;
+        profile[msg.sender].flightId = "";
         // emit TransferLP(msg.sender, insuranceId);
         return true;
     }

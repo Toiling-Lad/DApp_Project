@@ -14,6 +14,7 @@ class App extends React.Component {
       account: '0x0',
       insurances: [],
       flights: [],
+      flightId: "",
       loading: true,
       points: 0,
       activeInsurance: false,
@@ -38,41 +39,7 @@ class App extends React.Component {
 
     this.buyWithSGD = this.buyWithSGD.bind(this)
     this.buyWithLP = this.buyWithLP.bind(this)
-    this.propsToState = this.propsToState.bind(this)
     this.claim = this.claim.bind(this)
-  }
-
-  propsToState(insurance) {
-    this.insurance = insurance
-    for (var i = 1; i <= this.state.insuranceTypes; i++) {
-      this.insurance.types(i).then(insurance => {
-        const array = [...this.state.insurances]
-        array.push({
-          insuranceId: insurance[0],
-          name: insurance[1],
-          awardLP: insurance[2],
-          costSGD: insurance[3],
-          costLP: insurance[4],
-          info: insurance[5],
-          active: insurance[6]
-        })
-        this.setState({ insurances: array })
-      })
-    }
-
-    this.insurance.profile(this.state.account).then(profile => {
-      this.setState({
-        points: profile[0].toNumber(),
-        balance: profile[1].toNumber(),
-        activeInsurance: profile[2]
-      })
-    })
-    this.insurance.profile(this.state.bankAccount).then(profile => {
-      this.setState({
-        bankAccountBalance: profile[1].toNumber()
-      })
-    })
-    this.setState({ loading: false })
   }
 
   componentDidMount() {
@@ -80,7 +47,37 @@ class App extends React.Component {
       this.web3.eth.getCoinbase((err, account) => {
         this.setState({ account })
         this.insurance.deployed().then(insurance => {
-          this.propsToState(insurance)
+          this.insurance = insurance
+          for (var i = 1; i <= this.state.insuranceTypes; i++) {
+            this.insurance.types(i).then(insurance => {
+              const array = [...this.state.insurances]
+              array.push({
+                insuranceId: insurance[0],
+                name: insurance[1],
+                awardLP: insurance[2],
+                costSGD: insurance[3],
+                costLP: insurance[4],
+                info: insurance[5],
+                active: insurance[6]
+              })
+              this.setState({ insurances: array })
+            })
+          }
+
+          this.insurance.profile(this.state.account).then(profile => {
+            this.setState({
+              points: profile[0].toNumber(),
+              balance: profile[1].toNumber(),
+              activeInsurance: profile[2],
+              flightId: profile[3]
+            })
+          })
+          this.insurance.profile(this.state.bankAccount).then(profile => {
+            this.setState({
+              bankAccountBalance: profile[1].toNumber()
+            })
+          })
+          this.setState({ loading: false })
         })
       })
 
@@ -93,9 +90,9 @@ class App extends React.Component {
     }
   }
 
-  buyWithSGD(insuranceId, awardLP, costSGD) {
+  buyWithSGD(insuranceId, awardLP, costSGD, flightId) {
     this.insurance
-      .buyWithSGD(insuranceId, this.state.bankAccount, awardLP, costSGD, {
+      .buyWithSGD(insuranceId, this.state.bankAccount, awardLP, costSGD, flightId, {
         from: this.state.account
       })
       .catch(error => {
@@ -103,15 +100,15 @@ class App extends React.Component {
       })
   }
 
-  buyWithLP(insuranceId, costLP) {
+  buyWithLP(insuranceId, costLP, flightId) {
     this.insurance
-      .buyWithLP(insuranceId, costLP, { from: this.state.account })
+      .buyWithLP(insuranceId, costLP, flightId, { from: this.state.account })
       .catch(error => {
         console.log(error)
       })
   }
 
-  claim(insuranceId, activeInsurance, delayed, cancelled) {
+  claim(insuranceId, activeInsurance, delayed, cancelled, flightId) {
     this.insurance
       .claim(
         insuranceId,
@@ -119,6 +116,7 @@ class App extends React.Component {
         activeInsurance,
         delayed,
         cancelled,
+        flightId,
         {
           from: this.state.account
         }
@@ -145,6 +143,7 @@ class App extends React.Component {
               buyWithSGD={this.buyWithSGD}
               buyWithLP={this.buyWithLP}
               balance={this.state.balance}
+              flightId={this.state.flightId}
               flights={this.state.flights}
               claim={this.claim}
             />
