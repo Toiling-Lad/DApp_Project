@@ -14,9 +14,10 @@ class App extends React.Component {
       insurances: [],
       bought: false,
       loading: true,
-      buying: false,
-      totalPoints: '',
-      insuranceTypes: 2
+      points: 0,
+      insuranceTypes: 2,
+      balance: 0,
+      bankAccount: "0xf17f52151ebef6c7334fad080c5704d77216b732"
     }
 
     if (typeof web3 != 'undefined') {
@@ -51,17 +52,20 @@ class App extends React.Component {
                 name: insurance[1],
                 active: insurance[2],
                 points: insurance[3],
-                cost: insurance[4]
+                cost: insurance[4],
+                amount: insurance[5]
               })
               this.setState({ insurances: array })
             })
           }
-          this.insurance.totalPoints().then(totalPoints => {
-            this.setState({ totalPoints: totalPoints.toString() })
+
+          this.insurance.profile(this.state.account).then(profile => {
+            this.setState({
+              points: profile[0].toNumber(),
+              balance: profile[1].toNumber()
+            })
           })
-          this.insurance.passengers(this.state.account).then(bought => {
-            this.setState({ bought, loading: false })
-          })
+          this.setState({ loading: false })
         })
       })
     } catch (error) {
@@ -69,13 +73,9 @@ class App extends React.Component {
     }
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    return this.state != nextState
-  }
-
   watchEvents() {
     this.insurance
-      .boughtInsurance(
+      .Transfer(
         {},
         {
           fromBlock: 0,
@@ -83,35 +83,45 @@ class App extends React.Component {
         }
       )
       .watch((error, event) => {
-        this.setState({ buying: false })
+        console.log(error)
       })
   }
 
-  buy(insuranceId) {
-    this.setState({ buying: true })
-    this.insurance
-      .buy(insuranceId, { from: this.state.account })
-      .then(result => this.setState({ bought: true }))
+  buy(insuranceId, points, amount) {
+    this.insurance.buy(
+        insuranceId, 
+        amount, 
+        points,
+        this.state.bankAccount, {
+        from: this.state.account
+      })
+      .then(() => {
+        alert('Transaction successful!')
+      })
+      .catch(error => {
+        console.log(error)
+    })
   }
 
   render() {
-    let content = this.state.loading ? (
-      <p class="text-center">Loading...</p>
-    ) : (
-      <Content
-        account={this.state.account}
-        totalPoints={this.state.totalPoints}
-        insurances={this.state.insurances}
-        buy={this.buy}
-      />
-    )
-
     return (
       <div class="row">
         <div class="col-lg-12 text-center">
           <h1>Insurance Panel</h1>
           <br />
-          {content}
+          {this.state.loading ? (
+            <p class="text-center">Loading...</p>
+          ) : (
+            <Content
+              account={this.state.account}
+              bankAccount={this.state.bankAccount}
+              points={this.state.points}
+              insurances={this.state.insurances}
+              buy={this.buy}
+              balance={this.state.balance}
+              claim={this.claim}
+            />
+          )}
         </div>
       </div>
     )

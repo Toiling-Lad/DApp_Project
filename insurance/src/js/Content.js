@@ -6,10 +6,15 @@ class Content extends React.Component {
     return (
       <div>
         <p>Your account: {this.props.account}</p>
-        <p>Accumulated Loyalty Points (LP): {this.props.totalPoints}</p>
+        <p>Balance: {this.props.balance}</p>
+        <p>Accumulated Loyalty Points (LP): {this.props.points}</p>
         <p>Ethereum conversion rate :</p>
         {this.props.insurances.length && (
-          <Table insurances={this.props.insurances} buy={this.props.buy} />
+          <Table
+            insurances={this.props.insurances}
+            buy={this.props.buy}
+            claim={this.props.claim}
+          />
         )}
       </div>
     )
