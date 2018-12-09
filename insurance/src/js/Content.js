@@ -3,7 +3,6 @@ import Table from './Table'
 import Flights from './Flights'
 
 class Content extends React.Component {
-  
   render() {
     return (
       <div>
@@ -21,9 +20,8 @@ class Content extends React.Component {
             claim={this.props.claim}
           />
         )}
-        {(this.props.insurances.length == 2) && (
+        {this.props.insurances.length == 2 && (
           <Flights
-            flights={this.props.flights}
             flightId={this.props.flightId}
             insurances={this.props.insurances}
             activeInsurance={this.props.activeInsurance}

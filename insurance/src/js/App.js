@@ -4,7 +4,6 @@ import Web3 from 'web3'
 import TruffleContract from 'truffle-contract'
 import Insurance from '../../build/contracts/Insurance.json'
 import Content from './Content'
-import axios from 'axios'
 import 'bootstrap/dist/css/bootstrap.css'
 
 class App extends React.Component {
@@ -13,8 +12,7 @@ class App extends React.Component {
     this.state = {
       account: '0x0',
       insurances: [],
-      flights: [],
-      flightId: "",
+      flightId: '',
       loading: true,
       points: 0,
       activeInsurance: false,
@@ -81,10 +79,6 @@ class App extends React.Component {
         })
       })
 
-      axios.get(`https://jsonplaceholder.typicode.com/users`).then(res => {
-        const flights = res.data
-        this.setState({ flights })
-      })
     } catch (error) {
       console.log(error)
     }
@@ -92,9 +86,16 @@ class App extends React.Component {
 
   buyWithSGD(insuranceId, awardLP, costSGD, flightId) {
     this.insurance
-      .buyWithSGD(insuranceId, this.state.bankAccount, awardLP, costSGD, flightId, {
-        from: this.state.account
-      })
+      .buyWithSGD(
+        insuranceId,
+        this.state.bankAccount,
+        awardLP,
+        costSGD,
+        flightId,
+        {
+          from: this.state.account
+        }
+      )
       .catch(error => {
         console.log(error)
       })
@@ -144,7 +145,6 @@ class App extends React.Component {
               buyWithLP={this.buyWithLP}
               balance={this.state.balance}
               flightId={this.state.flightId}
-              flights={this.state.flights}
               claim={this.claim}
             />
           )}

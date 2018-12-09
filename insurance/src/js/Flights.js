@@ -1,20 +1,39 @@
 import React from 'react'
+import axios from 'axios'
 
 class Flights extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      displayedFlights: this.props.flights,
+      flights: [],
+      displayedFlights: []
     }
 
     this.buttonArea = this.buttonArea.bind(this)
     this.handleChange = this.handleChange.bind(this)
   }
 
+
+  componentDidMount() {
+    // http://www.virtualradarserver.co.uk/Documentation/Formats/AircraftList.aspx
+    // Find Values from here
+
+    axios.get(`api/VirtualRadar/AircraftList.json`)
+      .then(res => {
+        const data = res.data.acList.filter(el => {
+          return el.Icao && el.Op && el.From && el.To && el.Alt
+        }).slice(1, 50)
+        this.setState({ flights: data, displayedFlights: data })
+      })
+      .catch(error => {
+        console.log(error)
+      })
+  }
+
   handleChange(event) {
     let search = event.target.value.toLowerCase(),
-      displayedFlights = this.props.flights.filter(el => {
-        let searchValue = el.name.toLowerCase()
+      displayedFlights = this.state.flights.filter(el => {
+        let searchValue = el.Icao.toLowerCase()
         return searchValue.indexOf(search) !== -1
       })
     this.setState({
@@ -78,20 +97,26 @@ class Flights extends React.Component {
   buttonArea(element, flightId) {
     return (
       <td>
-        {!this.props.activeInsurance ? this.buttonSGD(
-          element.insuranceId,
-          element.awardLP,
-          element.costSGD,
-          flightId
-        ) : null}
-        {this.props.points >= element.costLP ? this.buttonLP(element.insuranceId, element.costLP, flightId) : null}
-        {element.active && (this.props.flightId == flightId) ? this.buttonClaim(
-          element.insuranceId,
-          element.active,
-          true,
-          false,
-          flightId
-        ): null}
+        {!this.props.activeInsurance
+          ? this.buttonSGD(
+              element.insuranceId,
+              element.awardLP,
+              element.costSGD,
+              flightId
+            )
+          : null}
+        {this.props.points >= element.costLP
+          ? this.buttonLP(element.insuranceId, element.costLP, flightId)
+          : null}
+        {element.active && this.props.flightId == flightId
+          ? this.buttonClaim(
+              element.insuranceId,
+              element.active,
+              true,
+              false,
+              flightId
+            )
+          : null}
       </td>
     )
   }
@@ -101,11 +126,15 @@ class Flights extends React.Component {
     this.state.displayedFlights.forEach(flight => {
       rows.push(
         <tr>
-          <td>{flight.name}</td>
-          <td>N/A</td>
-          <td>N/A</td>
-          {this.buttonArea(this.props.insurances[0], flight.name)}
-          {this.buttonArea(this.props.insurances[1], flight.name)}
+          <td>{flight.Icao}</td>
+          <td>{flight.Op}</td>
+          <td>{flight.From}</td>
+          <td>{flight.To}</td>
+          <td>{flight.Alt}</td>
+          <td>{flight.Sat}</td>
+          <td>{flight.Interested}</td>
+          {this.buttonArea(this.props.insurances[0], flight.Icao)}
+          {this.buttonArea(this.props.insurances[1], flight.Icao)}
         </tr>
       )
     })
@@ -119,7 +148,11 @@ class Flights extends React.Component {
         <table class="table">
           <thead>
             <tr>
-              <th>Flights</th>
+              <th>Flight</th>
+              <th>Company</th>
+              <th>From</th>
+              <th>To</th>
+              <th>Altitude (Ft)</th>
               <th>Delayed</th>
               <th>Cancelled</th>
               <th>One-Way</th>

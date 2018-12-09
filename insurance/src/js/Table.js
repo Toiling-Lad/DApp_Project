@@ -1,7 +1,6 @@
 import React from 'react'
 
 class Table extends React.Component {
-
   render() {
     let rows = []
 

@@ -2,6 +2,14 @@ const path = require('path')
 module.exports = {
   entry: path.join(__dirname, 'src/js', 'App.js'),
   devServer: {
+    proxy: {
+      '/api': {
+        target: 'https://public-api.adsbexchange.com',
+        pathRewrite: { '^/api': '' },
+        changeOrigin: true,
+        secure: false
+      }
+    },
     contentBase: path.join(__dirname, 'src')
   },
   output: {
