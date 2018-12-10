@@ -97,9 +97,6 @@ class Flights extends React.Component {
   }
 
   buttonArea(element, flightId, column) {
-    if (this.props.activeInsurance && this.props.flightId == flightId) {
-      console.log(this.props)
-    }
     return (
       <td>
         {!this.props.activeInsurance

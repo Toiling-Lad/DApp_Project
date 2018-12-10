@@ -46,8 +46,9 @@ contract Insurance {
         types[insuranceTypesCount] = FlightInsurance(insuranceTypesCount, name, awardLP, costSGD, costLP, info, false);
     }
 
-    function buyWithSGD (int insuranceId, address receiver, int awardLP, int costSGD, string flightId) public payable returns(bool sufficient){
+    function buyWithSGD (int insuranceId, address receiver, int awardLP, string flightId) public payable returns(bool sufficient){
         // ensure enough ether is being sent for the contract, static values for now
+        int costSGD = types[insuranceId].costSGD;
         if(keccak256(types[insuranceId].name) == keccak256("One-Way") && msg.value != 2 ether){
           return false;
         }

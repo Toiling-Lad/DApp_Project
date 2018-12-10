@@ -97,17 +97,10 @@ class App extends React.Component {
 
   buyWithSGD(insuranceId, awardLP, costSGD, flightId) {
     this.insurance
-      .buyWithSGD(
-        insuranceId,
-        this.state.bankAccount,
-        awardLP,
-        costSGD,
-        flightId,
-        {
-          from: this.state.account,
-          value: this.web3.toWei(2, 'ether')
-        }
-      )
+      .buyWithSGD(insuranceId, this.state.bankAccount, awardLP, flightId, {
+        from: this.state.account,
+        value: this.web3.toWei(2, 'ether')
+      })
       .then(() => {
         this.insurance.profile(this.state.account).then(profile => {
           this.refreshAccountInfo(profile)
