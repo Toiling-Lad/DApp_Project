@@ -67,7 +67,8 @@ class App extends React.Component {
               points: profile[0].toNumber(),
               balance: profile[1].toNumber(),
               activeInsurance: profile[2],
-              flightId: profile[3]
+              flightId: profile[3],
+              insuranceType: profile[4]
             })
           })
           this.insurance.profile(this.state.bankAccount).then(profile => {
@@ -78,10 +79,20 @@ class App extends React.Component {
           this.setState({ loading: false })
         })
       })
-
     } catch (error) {
       console.log(error)
     }
+  }
+  refreshAccountInfo(profile) {
+    console.log(profile[2])
+    console.log(profile[3])
+    this.setState({
+      points: profile[0].toNumber(),
+      balance: profile[1].toNumber(),
+      activeInsurance: profile[2],
+      flightId: profile[3],
+      insuranceType: profile[4]
+    })
   }
 
   buyWithSGD(insuranceId, awardLP, costSGD, flightId) {
@@ -93,9 +104,15 @@ class App extends React.Component {
         costSGD,
         flightId,
         {
-          from: this.state.account
+          from: this.state.account,
+          value: this.web3.toWei(2, 'ether')
         }
       )
+      .then(() => {
+        this.insurance.profile(this.state.account).then(profile => {
+          this.refreshAccountInfo(profile)
+        })
+      })
       .catch(error => {
         console.log(error)
       })
@@ -104,6 +121,11 @@ class App extends React.Component {
   buyWithLP(insuranceId, costLP, flightId) {
     this.insurance
       .buyWithLP(insuranceId, costLP, flightId, { from: this.state.account })
+      .then(() => {
+        this.insurance.profile(this.state.account).then(profile => {
+          this.refreshAccountInfo(profile)
+        })
+      })
       .catch(error => {
         console.log(error)
       })
@@ -122,6 +144,11 @@ class App extends React.Component {
           from: this.state.account
         }
       )
+      .then(() => {
+        this.insurance.profile(this.state.account).then(profile => {
+          this.refreshAccountInfo(profile)
+        })
+      })
       .catch(error => {
         console.log(error)
       })
@@ -146,6 +173,7 @@ class App extends React.Component {
               balance={this.state.balance}
               flightId={this.state.flightId}
               claim={this.claim}
+              insuranceType={this.state.insuranceType}
             />
           )}
         </div>

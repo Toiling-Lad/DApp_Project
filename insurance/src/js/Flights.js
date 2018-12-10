@@ -13,16 +13,18 @@ class Flights extends React.Component {
     this.handleChange = this.handleChange.bind(this)
   }
 
-
   componentDidMount() {
     // http://www.virtualradarserver.co.uk/Documentation/Formats/AircraftList.aspx
     // Find Values from here
 
-    axios.get(`api/VirtualRadar/AircraftList.json`)
+    axios
+      .get(`api/VirtualRadar/AircraftList.json`)
       .then(res => {
-        const data = res.data.acList.filter(el => {
-          return el.Icao && el.Op && el.From && el.To && el.Alt
-        }).slice(1, 50)
+        const data = res.data.acList
+          .filter(el => {
+            return el.Icao && el.Op && el.From && el.To && el.Alt
+          })
+          .slice(1, 50)
         this.setState({ flights: data, displayedFlights: data })
       })
       .catch(error => {
@@ -94,7 +96,10 @@ class Flights extends React.Component {
     )
   }
 
-  buttonArea(element, flightId) {
+  buttonArea(element, flightId, column) {
+    if (this.props.activeInsurance && this.props.flightId == flightId) {
+      console.log(this.props)
+    }
     return (
       <td>
         {!this.props.activeInsurance
@@ -108,10 +113,25 @@ class Flights extends React.Component {
         {this.props.points >= element.costLP
           ? this.buttonLP(element.insuranceId, element.costLP, flightId)
           : null}
-        {element.active && this.props.flightId == flightId
+        {this.props.activeInsurance &&
+        this.props.flightId == flightId &&
+        column == 1 &&
+        this.props.insuranceType == 'One-Way'
           ? this.buttonClaim(
               element.insuranceId,
-              element.active,
+              this.props.activeInsurance,
+              true,
+              false,
+              flightId
+            )
+          : null}
+        {this.props.activeInsurance &&
+        this.props.flightId == flightId &&
+        column == 2 &&
+        this.props.insuranceType == 'Round-Trip'
+          ? this.buttonClaim(
+              element.insuranceId,
+              this.props.activeInsurance,
               true,
               false,
               flightId
@@ -133,8 +153,8 @@ class Flights extends React.Component {
           <td>{flight.Alt}</td>
           <td>{flight.Sat}</td>
           <td>{flight.Interested}</td>
-          {this.buttonArea(this.props.insurances[0], flight.Icao)}
-          {this.buttonArea(this.props.insurances[1], flight.Icao)}
+          {this.buttonArea(this.props.insurances[0], flight.Icao, 1)}
+          {this.buttonArea(this.props.insurances[1], flight.Icao, 2)}
         </tr>
       )
     })

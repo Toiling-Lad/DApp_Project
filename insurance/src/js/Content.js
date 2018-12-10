@@ -29,6 +29,7 @@ class Content extends React.Component {
             buyWithLP={this.props.buyWithLP}
             points={this.props.points}
             claim={this.props.claim}
+            insuranceType={this.props.insuranceType}
           />
         )}
       </div>

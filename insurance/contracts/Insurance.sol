@@ -16,6 +16,7 @@ contract Insurance {
         int balance;
         bool activeInsurance;
         string flightId;
+        string insuranceType;
     }
 
     mapping(int => FlightInsurance) public types;
@@ -24,14 +25,14 @@ contract Insurance {
     int public insuranceTypesCount;
 
     event TransferSGD(
-        address indexed _from, 
-        address indexed _to, 
+        address indexed _from,
+        address indexed _to,
         int _value,
         int indexed insuranceinsuranceId
     );
 
     event TransferLP(
-        address indexed _from, 
+        address indexed _from,
         int indexed insuranceinsuranceId
     );
 
@@ -45,14 +46,21 @@ contract Insurance {
         types[insuranceTypesCount] = FlightInsurance(insuranceTypesCount, name, awardLP, costSGD, costLP, info, false);
     }
 
-    function buyWithSGD (int insuranceId, address receiver, int awardLP, int costSGD, string flightId) public returns(bool sufficient){
-        // if (profile[msg.sender].balance < costSGD) return false;
+    function buyWithSGD (int insuranceId, address receiver, int awardLP, int costSGD, string flightId) public payable returns(bool sufficient){
+        // ensure enough ether is being sent for the contract, static values for now
+        if(keccak256(types[insuranceId].name) == keccak256("One-Way") && msg.value != 2 ether){
+          return false;
+        }
+        if(keccak256(types[insuranceId].name) == keccak256("Round-Trip") && msg.value != 2 ether){
+          return false;
+        }
         types[insuranceId].active = true;
         profile[msg.sender].activeInsurance = true;
         profile[msg.sender].points += awardLP;
         profile[msg.sender].balance -= costSGD;
         profile[msg.sender].flightId = flightId;
         profile[receiver].balance += costSGD;
+        profile[msg.sender].insuranceType = types[insuranceId].name;
 
         emit TransferSGD(msg.sender, receiver, costSGD, insuranceId);
         return true;
@@ -72,11 +80,11 @@ contract Insurance {
 
     function claim (int insuranceId, address receiver, bool activeInsurance, bool delayed, bool canceled, string flightId) public returns(bool sufficient){
         if (!profile[msg.sender].activeInsurance) return false;
-        
+        msg.sender.transfer(2 ether);
         if (delayed) {
             profile[msg.sender].balance += 200;
             profile[receiver].balance -= 200;
-        } else if (canceled) { 
+        } else if (canceled) {
             profile[msg.sender].balance += 5000;
             profile[receiver].balance -= 5000;
         }
