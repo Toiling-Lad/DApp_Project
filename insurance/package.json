@@ -42,7 +42,6 @@
     "singleQuote": true
   },
   "dependencies": {
-    "axios": "^0.18.0",
-    "dotenv": "^6.2.0"
+    "axios": "^0.18.0"
   }
 }

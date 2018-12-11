@@ -59,7 +59,7 @@ TODO: What to do to get running
 #### Aviation Edge API
  
  ```
- Go to -> '.DApp_Project/insurance/src/js/Flights.js' and place your  Aviation Edge api-key.
+ Go to -> '.DApp_Project/insurance/src/js/Flights.js' and place your Aviation Edge api-key.
 
  const api_key = 'PLACE_YOUR_API_KEY_HERE'
  ```
