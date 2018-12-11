@@ -6,6 +6,8 @@ import Insurance from '../../build/contracts/Insurance.json'
 import Content from './Content'
 import 'bootstrap/dist/css/bootstrap.css'
 
+require('dotenv').config()
+
 class App extends React.Component {
   constructor(props) {
     super(props)

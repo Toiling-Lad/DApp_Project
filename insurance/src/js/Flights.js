@@ -14,17 +14,16 @@ class Flights extends React.Component {
   }
 
   componentDidMount() {
-    // http://www.virtualradarserver.co.uk/Documentation/Formats/AircraftList.aspx
-    // Find Values from here
+    const api_key = 'PLACE_YOUR_API_KEY_HERE'
 
     axios
-      .get(`api/VirtualRadar/AircraftList.json`)
+      .get(
+        `http://aviation-edge.com/v2/public/timetable?key=` +
+          api_key +
+          `&iataCode=JFK&type=departure`
+      )
       .then(res => {
-        const data = res.data.acList
-          .filter(el => {
-            return el.Icao && el.Op && el.From && el.To && el.Alt
-          })
-          .slice(1, 50)
+        const data = res.data
         this.setState({ flights: data, displayedFlights: data })
       })
       .catch(error => {
@@ -35,7 +34,7 @@ class Flights extends React.Component {
   handleChange(event) {
     let search = event.target.value.toLowerCase(),
       displayedFlights = this.state.flights.filter(el => {
-        let searchValue = el.Icao.toLowerCase()
+        let searchValue = el.flight.iataNumber.toLowerCase()
         return searchValue.indexOf(search) !== -1
       })
     this.setState({
@@ -96,7 +95,9 @@ class Flights extends React.Component {
     )
   }
 
-  buttonArea(element, flightId, column) {
+  buttonArea(element, flightId, status, column ) {
+    let delayed = [status].includes(('incident' || 'diverted' || 'unknown'))
+    let cancelled = (status === 'cancelled')
     return (
       <td>
         {!this.props.activeInsurance
@@ -117,8 +118,8 @@ class Flights extends React.Component {
           ? this.buttonClaim(
               element.insuranceId,
               this.props.activeInsurance,
-              true,
-              false,
+              delayed,
+              cancelled,
               flightId
             )
           : null}
@@ -129,8 +130,8 @@ class Flights extends React.Component {
           ? this.buttonClaim(
               element.insuranceId,
               this.props.activeInsurance,
-              true,
-              false,
+              delayed,
+              cancelled,
               flightId
             )
           : null}
@@ -140,18 +141,26 @@ class Flights extends React.Component {
 
   render() {
     let rows = []
-    this.state.displayedFlights.forEach(flight => {
+    this.state.displayedFlights.forEach(element => {
       rows.push(
         <tr>
-          <td>{flight.Icao}</td>
-          <td>{flight.Op}</td>
-          <td>{flight.From}</td>
-          <td>{flight.To}</td>
-          <td>{flight.Alt}</td>
-          <td>{flight.Sat}</td>
-          <td>{flight.Interested}</td>
-          {this.buttonArea(this.props.insurances[0], flight.Icao, 1)}
-          {this.buttonArea(this.props.insurances[1], flight.Icao, 2)}
+          <td>{element.flight.iataNumber}</td>
+          <td>{element.airline.name}</td>
+          <td>{element.departure.iataCode}</td>
+          <td>{element.arrival.iataCode}</td>
+          <td>{element.status}</td>
+          {this.buttonArea(
+            this.props.insurances[0],
+            element.flight.iataNumber,
+            element.status,
+            1
+          )}
+          {this.buttonArea(
+            this.props.insurances[1],
+            element.flight.iataNumber,
+            element.status,
+            2
+          )}
         </tr>
       )
     })
@@ -167,11 +176,9 @@ class Flights extends React.Component {
             <tr>
               <th>Flight</th>
               <th>Company</th>
-              <th>From</th>
-              <th>To</th>
-              <th>Altitude (Ft)</th>
-              <th>Delayed</th>
-              <th>Cancelled</th>
+              <th>Departure</th>
+              <th>Arrival</th>
+              <th>Status</th>
               <th>One-Way</th>
               <th>Round-Trip</th>
             </tr>

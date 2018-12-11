@@ -4,7 +4,7 @@ module.exports = {
   devServer: {
     proxy: {
       '/api': {
-        target: 'https://public-api.adsbexchange.com',
+        target: 'http://aviation-edge.com',
         pathRewrite: { '^/api': '' },
         changeOrigin: true,
         secure: false
@@ -15,6 +15,9 @@ module.exports = {
   output: {
     path: path.join(__dirname, 'dist'),
     filename: 'build.js'
+  },
+  node: {
+    fs: 'empty'
   },
   module: {
     rules: [
