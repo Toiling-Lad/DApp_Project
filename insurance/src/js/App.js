@@ -5,6 +5,7 @@ import TruffleContract from 'truffle-contract'
 import Insurance from '../../build/contracts/Insurance.json'
 import Content from './Content'
 import 'bootstrap/dist/css/bootstrap.css'
+import axios from 'axios'
 
 require('dotenv').config()
 
@@ -37,7 +38,7 @@ class App extends React.Component {
     this.insurance = TruffleContract(Insurance)
     this.insurance.setProvider(this.web3Provider)
 
-    this.buyWithSGD = this.buyWithSGD.bind(this)
+    this.buyWithUSD = this.buyWithUSD.bind(this)
     this.buyWithLP = this.buyWithLP.bind(this)
     this.claim = this.claim.bind(this)
   }
@@ -55,7 +56,7 @@ class App extends React.Component {
                 insuranceId: insurance[0],
                 name: insurance[1],
                 awardLP: insurance[2],
-                costSGD: insurance[3],
+                costUSD: insurance[3],
                 costLP: insurance[4],
                 info: insurance[5],
                 active: insurance[6]
@@ -84,10 +85,17 @@ class App extends React.Component {
     } catch (error) {
       console.log(error)
     }
+
+    axios
+      .get(`https://api.coinmarketcap.com/v1/ticker/ethereum/`)
+      .then(res => {
+        this.setState({ transactionRate: res.data[0].price_usd })
+      })
+      .catch(error => {
+        console.log(error)
+      })
   }
   refreshAccountInfo(profile) {
-    console.log(profile[2])
-    console.log(profile[3])
     this.setState({
       points: profile[0].toNumber(),
       balance: profile[1].toNumber(),
@@ -97,11 +105,11 @@ class App extends React.Component {
     })
   }
 
-  buyWithSGD(insuranceId, awardLP, costSGD, flightId) {
+  buyWithUSD(insuranceId, awardLP, costUSD, flightId) {
     this.insurance
-      .buyWithSGD(insuranceId, this.state.bankAccount, awardLP, flightId, {
+      .buyWithUSD(insuranceId, this.state.bankAccount, awardLP, flightId, {
         from: this.state.account,
-        value: this.web3.toWei(2, 'ether')
+        value: this.web3.toWei(costUSD / this.state.transactionRate, 'ether')
       })
       .then(() => {
         this.insurance.profile(this.state.account).then(profile => {
@@ -127,6 +135,9 @@ class App extends React.Component {
   }
 
   claim(insuranceId, activeInsurance, delayed, cancelled, flightId) {
+    var conversionRate = Math.round(
+      this.web3.toWei(1 / this.state.transactionRate, 'ether')
+    )
     this.insurance
       .claim(
         insuranceId,
@@ -135,6 +146,7 @@ class App extends React.Component {
         delayed,
         cancelled,
         flightId,
+        Math.round(this.web3.toWei(1 / this.state.transactionRate, 'ether')),
         {
           from: this.state.account
         }
@@ -163,7 +175,7 @@ class App extends React.Component {
               points={this.state.points}
               insurances={this.state.insurances}
               activeInsurance={this.state.activeInsurance}
-              buyWithSGD={this.buyWithSGD}
+              buyWithUSD={this.buyWithUSD}
               buyWithLP={this.buyWithLP}
               balance={this.state.balance}
               flightId={this.state.flightId}

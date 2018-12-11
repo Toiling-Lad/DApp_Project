@@ -5,7 +5,7 @@ contract Insurance {
         int insuranceId;
         string name;
         int awardLP;
-        int costSGD;
+        int costUSD;
         int costLP;
         string info;
         bool active;
@@ -18,13 +18,12 @@ contract Insurance {
         string flightId;
         string insuranceType;
     }
-
     mapping(int => FlightInsurance) public types;
     mapping(address => Profile) public profile;
 
     int public insuranceTypesCount;
 
-    event TransferSGD(
+    event TransferUSD(
         address indexed _from,
         address indexed _to,
         int _value,
@@ -37,33 +36,27 @@ contract Insurance {
     );
 
     constructor() public {
-        addInsurance("One-Way", 10, 20, 100, "SGD$20 or LP100");
-        addInsurance("Round-Trip", 30, 30, 150, "SGD$30 or LP150");
+        addInsurance("One-Way", 10, 20, 100, "USD$20 or LP100");
+        addInsurance("Round-Trip", 30, 30, 150, "USD$30 or LP150");
     }
 
-    function addInsurance (string name, int awardLP, int costSGD, int costLP, string info) private {
+    function addInsurance (string name, int awardLP, int costUSD, int costLP, string info) private {
         insuranceTypesCount ++;
-        types[insuranceTypesCount] = FlightInsurance(insuranceTypesCount, name, awardLP, costSGD, costLP, info, false);
+        types[insuranceTypesCount] = FlightInsurance(insuranceTypesCount, name, awardLP, costUSD, costLP, info, false);
     }
 
-    function buyWithSGD (int insuranceId, address receiver, int awardLP, string flightId) public payable returns(bool sufficient){
+    function buyWithUSD (int insuranceId, address receiver, int awardLP, string flightId) public payable returns(bool sufficient){
         // ensure enough ether is being sent for the contract, static values for now
-        int costSGD = types[insuranceId].costSGD;
-        if(keccak256(types[insuranceId].name) == keccak256("One-Way") && msg.value != 2 ether){
-          return false;
-        }
-        if(keccak256(types[insuranceId].name) == keccak256("Round-Trip") && msg.value != 2 ether){
-          return false;
-        }
+        int costUSD = types[insuranceId].costUSD;
         types[insuranceId].active = true;
         profile[msg.sender].activeInsurance = true;
         profile[msg.sender].points += awardLP;
-        profile[msg.sender].balance -= costSGD;
+        profile[msg.sender].balance -= costUSD;
         profile[msg.sender].flightId = flightId;
-        profile[receiver].balance += costSGD;
+        profile[receiver].balance += costUSD;
         profile[msg.sender].insuranceType = types[insuranceId].name;
 
-        emit TransferSGD(msg.sender, receiver, costSGD, insuranceId);
+        emit TransferUSD(msg.sender, receiver, costUSD, insuranceId);
         return true;
     }
 
@@ -79,9 +72,9 @@ contract Insurance {
         return true;
     }
 
-    function claim (int insuranceId, address receiver, bool activeInsurance, bool delayed, bool canceled, string flightId) public returns(bool sufficient){
+    function claim (int insuranceId, address receiver, bool activeInsurance, bool delayed, bool canceled, string flightId, uint256 transactionRate) public returns(bool sufficient){
         if (!profile[msg.sender].activeInsurance) return false;
-        msg.sender.transfer(2 ether);
+        msg.sender.transfer(20*transactionRate);
         if (delayed) {
             profile[msg.sender].balance += 200;
             profile[receiver].balance -= 200;
