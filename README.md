@@ -34,6 +34,7 @@ The Dapp should perform the following tasks automatically.
 - Truffle: https://github.com/trufflesuite/truffle
 - Ganache: http://truffleframework.com/ganache/
 - Metamask: https://metamask.io/
+- Aviation Edge API: https://aviation-edge.com/
 
 ## Getting Started
 
@@ -53,6 +54,15 @@ Runs your app in development mode with prettier and tests in order to assure cod
 
 #### Running metamask
 TODO: What to do to get running
+
+
+#### Aviation Edge API
+ 
+ ```
+ Go to -> '.DApp_Project/insurance/src/js/Flights.js' and place your  Aviation Edge api-key.
+
+ const api_key = 'PLACE_YOUR_API_KEY_HERE'
+ ```
 
 #### `$ npm run prettier`
 [Prettier](https://github.com/prettier/prettier) is an opinionated code formatter. It enforces a consistent style by parsing your code and re-printing it with its own rules that take the maximum line length into account, wrapping code when necessary.
