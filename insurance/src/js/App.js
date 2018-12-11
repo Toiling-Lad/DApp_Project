@@ -41,6 +41,8 @@ class App extends React.Component {
     this.buyWithUSD = this.buyWithUSD.bind(this)
     this.buyWithLP = this.buyWithLP.bind(this)
     this.claim = this.claim.bind(this)
+    this.cancelInsurance = this.cancelInsurance.bind(this)
+    this.donate = this.donate.bind(this)
   }
 
   componentDidMount() {
@@ -161,6 +163,36 @@ class App extends React.Component {
       })
   }
 
+  cancelInsurance() {
+    this.insurance
+      .cancelInsurance({
+        from: this.state.account
+      })
+      .then(() => {
+        this.insurance.profile(this.state.account).then(profile => {
+          this.refreshAccountInfo(profile)
+        })
+      })
+      .catch(error => {
+        console.log(error)
+      })
+  }
+  donate() {
+    this.insurance
+      .donate({
+        from: this.state.account,
+        value: this.web3.toWei(10, 'ether')
+      })
+      .then(() => {
+        this.insurance.profile(this.state.account).then(profile => {
+          this.refreshAccountInfo(profile)
+        })
+      })
+      .catch(error => {
+        console.log(error)
+      })
+  }
+
   render() {
     return (
       <div class="row">
@@ -181,6 +213,8 @@ class App extends React.Component {
               flightId={this.state.flightId}
               claim={this.claim}
               insuranceType={this.state.insuranceType}
+              cancelInsurance={this.cancelInsurance}
+              donate={this.donate}
             />
           )}
         </div>

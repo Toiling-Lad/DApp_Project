@@ -14,7 +14,7 @@ class Flights extends React.Component {
   }
 
   componentDidMount() {
-    const api_key = 'PLACE_YOUR_API_KEY_HERE'
+    const api_key = 'c4ad02-f46eb3'
 
     axios
       .get(
@@ -95,9 +95,9 @@ class Flights extends React.Component {
     )
   }
 
-  buttonArea(element, flightId, status, column ) {
-    let delayed = [status].includes(('incident' || 'diverted' || 'unknown'))
-    let cancelled = (status === 'cancelled')
+  buttonArea(element, flightId, status, column) {
+    let delayed = [status].includes('incident' || 'diverted' || 'unknown')
+    let cancelled = status === 'cancelled'
     return (
       <td>
         {!this.props.activeInsurance

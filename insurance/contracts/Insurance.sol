@@ -89,4 +89,11 @@ contract Insurance {
         // emit TransferLP(msg.sender, insuranceId);
         return true;
     }
+    function cancelInsurance () public {
+      profile[msg.sender].activeInsurance = false;
+      profile[msg.sender].flightId = "";
+    }
+    function donate() public payable {
+      
+    }
 }
