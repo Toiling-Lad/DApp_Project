@@ -1,4 +1,11 @@
 pragma solidity ^0.4.24;
+contract FiatContract {
+  function ETH(uint _id) constant returns (uint256);
+  function USD(uint _id) constant returns (uint256);
+  function EUR(uint _id) constant returns (uint256);
+  function GBP(uint _id) constant returns (uint256);
+  function updatedAt(uint _id) constant returns (uint);
+}
 
 contract Insurance {
     struct FlightInsurance {
@@ -18,7 +25,7 @@ contract Insurance {
         string flightId;
         string insuranceType;
     }
-
+    FiatContract public price;
     mapping(int => FlightInsurance) public types;
     mapping(address => Profile) public profile;
 
@@ -39,7 +46,10 @@ contract Insurance {
     constructor() public {
         addInsurance("One-Way", 10, 20, 100, "SGD$20 or LP100");
         addInsurance("Round-Trip", 30, 30, 150, "SGD$30 or LP150");
+        price = FiatContract(0x2CDe56E5c8235D6360CCbb0c57Ce248Ca9C80909);
     }
+
+    // returns $5.00 USD in ETH wei.
 
     function addInsurance (string name, int awardLP, int costSGD, int costLP, string info) private {
         insuranceTypesCount ++;
@@ -49,12 +59,6 @@ contract Insurance {
     function buyWithSGD (int insuranceId, address receiver, int awardLP, string flightId) public payable returns(bool sufficient){
         // ensure enough ether is being sent for the contract, static values for now
         int costSGD = types[insuranceId].costSGD;
-        if(keccak256(types[insuranceId].name) == keccak256("One-Way") && msg.value != 2 ether){
-          return false;
-        }
-        if(keccak256(types[insuranceId].name) == keccak256("Round-Trip") && msg.value != 2 ether){
-          return false;
-        }
         types[insuranceId].active = true;
         profile[msg.sender].activeInsurance = true;
         profile[msg.sender].points += awardLP;
@@ -79,9 +83,9 @@ contract Insurance {
         return true;
     }
 
-    function claim (int insuranceId, address receiver, bool activeInsurance, bool delayed, bool canceled, string flightId) public returns(bool sufficient){
+    function claim (int insuranceId, address receiver, bool activeInsurance, bool delayed, bool canceled, string flightId, uint256 transactionRate) public returns(bool sufficient){
         if (!profile[msg.sender].activeInsurance) return false;
-        msg.sender.transfer(2 ether);
+        msg.sender.transfer(20*transactionRate);
         if (delayed) {
             profile[msg.sender].balance += 200;
             profile[receiver].balance -= 200;

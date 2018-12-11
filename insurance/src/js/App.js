@@ -5,6 +5,7 @@ import TruffleContract from 'truffle-contract'
 import Insurance from '../../build/contracts/Insurance.json'
 import Content from './Content'
 import 'bootstrap/dist/css/bootstrap.css'
+import axios from 'axios'
 
 class App extends React.Component {
   constructor(props) {
@@ -82,6 +83,17 @@ class App extends React.Component {
     } catch (error) {
       console.log(error)
     }
+
+    axios
+      .get(`https://api.coinmarketcap.com/v1/ticker/ethereum/`)
+      .then(res => {
+        console.log(res)
+        console.log(res.data[0].price_usd)
+        this.setState({ transactionRate: res.data[0].price_usd })
+      })
+      .catch(error => {
+        console.log(error)
+      })
   }
   refreshAccountInfo(profile) {
     console.log(profile[2])
@@ -99,7 +111,7 @@ class App extends React.Component {
     this.insurance
       .buyWithSGD(insuranceId, this.state.bankAccount, awardLP, flightId, {
         from: this.state.account,
-        value: this.web3.toWei(2, 'ether')
+        value: this.web3.toWei(costSGD / this.state.transactionRate, 'ether')
       })
       .then(() => {
         this.insurance.profile(this.state.account).then(profile => {
@@ -125,6 +137,9 @@ class App extends React.Component {
   }
 
   claim(insuranceId, activeInsurance, delayed, cancelled, flightId) {
+    var conversionRate = Math.round(
+      this.web3.toWei(1 / this.state.transactionRate, 'ether')
+    )
     this.insurance
       .claim(
         insuranceId,
@@ -133,6 +148,7 @@ class App extends React.Component {
         delayed,
         cancelled,
         flightId,
+        Math.round(this.web3.toWei(1 / this.state.transactionRate, 'ether')),
         {
           from: this.state.account
         }
