@@ -1,11 +1,4 @@
 pragma solidity ^0.4.24;
-contract FiatContract {
-  function ETH(uint _id) constant returns (uint256);
-  function USD(uint _id) constant returns (uint256);
-  function EUR(uint _id) constant returns (uint256);
-  function GBP(uint _id) constant returns (uint256);
-  function updatedAt(uint _id) constant returns (uint);
-}
 
 contract Insurance {
     struct FlightInsurance {
@@ -46,10 +39,7 @@ contract Insurance {
     constructor() public {
         addInsurance("One-Way", 10, 20, 100, "SGD$20 or LP100");
         addInsurance("Round-Trip", 30, 30, 150, "SGD$30 or LP150");
-        price = FiatContract(0x2CDe56E5c8235D6360CCbb0c57Ce248Ca9C80909);
     }
-
-    // returns $5.00 USD in ETH wei.
 
     function addInsurance (string name, int awardLP, int costSGD, int costLP, string info) private {
         insuranceTypesCount ++;
