@@ -17,10 +17,11 @@ contract Insurance {
         bool activeInsurance;
         string flightId;
         string insuranceType;
+        bool delayClaimed;
     }
     mapping(int => FlightInsurance) public types;
     mapping(address => Profile) public profile;
-
+    string [] noBuy = ['active', 'landed', 'incident', 'diverted', 'unknown', 'cancelled'];
     int public insuranceTypesCount;
 
     event TransferUSD(
@@ -45,8 +46,14 @@ contract Insurance {
         types[insuranceTypesCount] = FlightInsurance(insuranceTypesCount, name, awardLP, costUSD, costLP, info, false);
     }
 
-    function buyWithUSD (int insuranceId, address receiver, int awardLP, string flightId) public payable returns(bool sufficient){
+    function buyWithUSD (int insuranceId, address receiver, int awardLP, string flightId, string status) public payable returns(bool sufficient){
         // ensure enough ether is being sent for the contract, static values for now
+        for(uint i=0;i<noBuy.length;i++) {
+          if(keccak256(status) == keccak256(noBuy[i])) {
+            msg.sender.transfer(msg.value);
+            return false;
+          }
+        }
         int costUSD = types[insuranceId].costUSD;
         types[insuranceId].active = true;
         profile[msg.sender].activeInsurance = true;
@@ -55,12 +62,12 @@ contract Insurance {
         profile[msg.sender].flightId = flightId;
         profile[receiver].balance += costUSD;
         profile[msg.sender].insuranceType = types[insuranceId].name;
-
+        profile[msg.sender].delayClaimed = false;
         emit TransferUSD(msg.sender, receiver, costUSD, insuranceId);
         return true;
     }
 
-    function buyWithLP (int insuranceId, int costLP, string flightId) public returns(bool sufficient){
+    function buyWithLP (int insuranceId, int costLP, string flightId, string status) public returns(bool sufficient){
         if (profile[msg.sender].points < costLP) return false;
 
         types[insuranceId].active = true;
@@ -74,18 +81,27 @@ contract Insurance {
 
     function claim (int insuranceId, address receiver, bool activeInsurance, bool delayed, bool canceled, string flightId, uint256 transactionRate) public returns(bool sufficient){
         if (!profile[msg.sender].activeInsurance) return false;
-        msg.sender.transfer(20*transactionRate);
-        if (delayed) {
+        if (delayed && !profile[msg.sender].delayClaimed) {
             profile[msg.sender].balance += 200;
             profile[receiver].balance -= 200;
-        } else if (canceled) {
+            profile[msg.sender].delayClaimed = true;
+            msg.sender.transfer(200*transactionRate);
+        } else if (canceled && !profile[msg.sender].delayClaimed) {
             profile[msg.sender].balance += 5000;
             profile[receiver].balance -= 5000;
+            msg.sender.transfer(5000*transactionRate);
+            types[insuranceId].active = false;
+            profile[msg.sender].activeInsurance = false;
+            profile[msg.sender].flightId = "";
+        } else if (canceled && profile[msg.sender].delayClaimed) {
+            profile[msg.sender].balance += 4800;
+            profile[receiver].balance -= 4800;
+            msg.sender.transfer(4800*transactionRate);
+            types[insuranceId].active = false;
+            profile[msg.sender].activeInsurance = false;
+            profile[msg.sender].flightId = "";
         }
 
-        types[insuranceId].active = false;
-        profile[msg.sender].activeInsurance = false;
-        profile[msg.sender].flightId = "";
         // emit TransferLP(msg.sender, insuranceId);
         return true;
     }
@@ -94,6 +110,6 @@ contract Insurance {
       profile[msg.sender].flightId = "";
     }
     function donate() public payable {
-      
+
     }
 }

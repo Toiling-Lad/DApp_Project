@@ -36,8 +36,8 @@ class Content extends React.Component {
         <p>Loyalty Points (LP): {this.props.points}</p>
         <p>Your Insured Flight: {this.props.flightId}</p>
         <div>
-        {this.buttonCancel()}
-        {this.buttonDonate()}
+          {this.buttonCancel()}
+          {this.buttonDonate()}
         </div>
         {this.props.insurances.length && (
           <Table
