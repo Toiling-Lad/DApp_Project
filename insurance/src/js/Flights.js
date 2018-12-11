@@ -43,21 +43,21 @@ class Flights extends React.Component {
     })
   }
 
-  buttonSGD(insuranceId, points, amount, flightId) {
+  buttonUSD(insuranceId, points, amount, flightId) {
     return (
       <button
         type="submit"
         class="btn btn-primary"
         onClick={click => {
           click.preventDefault(),
-            this.props.buyWithSGD(
+            this.props.buyWithUSD(
               insuranceId,
               points.toNumber(),
               amount.toNumber(),
               flightId
             )
         }}>
-        SGD
+        USD
       </button>
     )
   }
@@ -100,10 +100,10 @@ class Flights extends React.Component {
     return (
       <td>
         {!this.props.activeInsurance
-          ? this.buttonSGD(
+          ? this.buttonUSD(
               element.insuranceId,
               element.awardLP,
-              element.costSGD,
+              element.costUSD,
               flightId
             )
           : null}

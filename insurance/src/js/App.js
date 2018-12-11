@@ -36,7 +36,7 @@ class App extends React.Component {
     this.insurance = TruffleContract(Insurance)
     this.insurance.setProvider(this.web3Provider)
 
-    this.buyWithSGD = this.buyWithSGD.bind(this)
+    this.buyWithUSD = this.buyWithUSD.bind(this)
     this.buyWithLP = this.buyWithLP.bind(this)
     this.claim = this.claim.bind(this)
   }
@@ -54,7 +54,7 @@ class App extends React.Component {
                 insuranceId: insurance[0],
                 name: insurance[1],
                 awardLP: insurance[2],
-                costSGD: insurance[3],
+                costUSD: insurance[3],
                 costLP: insurance[4],
                 info: insurance[5],
                 active: insurance[6]
@@ -87,8 +87,6 @@ class App extends React.Component {
     axios
       .get(`https://api.coinmarketcap.com/v1/ticker/ethereum/`)
       .then(res => {
-        console.log(res)
-        console.log(res.data[0].price_usd)
         this.setState({ transactionRate: res.data[0].price_usd })
       })
       .catch(error => {
@@ -96,8 +94,6 @@ class App extends React.Component {
       })
   }
   refreshAccountInfo(profile) {
-    console.log(profile[2])
-    console.log(profile[3])
     this.setState({
       points: profile[0].toNumber(),
       balance: profile[1].toNumber(),
@@ -107,11 +103,11 @@ class App extends React.Component {
     })
   }
 
-  buyWithSGD(insuranceId, awardLP, costSGD, flightId) {
+  buyWithUSD(insuranceId, awardLP, costUSD, flightId) {
     this.insurance
-      .buyWithSGD(insuranceId, this.state.bankAccount, awardLP, flightId, {
+      .buyWithUSD(insuranceId, this.state.bankAccount, awardLP, flightId, {
         from: this.state.account,
-        value: this.web3.toWei(costSGD / this.state.transactionRate, 'ether')
+        value: this.web3.toWei(costUSD / this.state.transactionRate, 'ether')
       })
       .then(() => {
         this.insurance.profile(this.state.account).then(profile => {
@@ -177,7 +173,7 @@ class App extends React.Component {
               points={this.state.points}
               insurances={this.state.insurances}
               activeInsurance={this.state.activeInsurance}
-              buyWithSGD={this.buyWithSGD}
+              buyWithUSD={this.buyWithUSD}
               buyWithLP={this.buyWithLP}
               balance={this.state.balance}
               flightId={this.state.flightId}

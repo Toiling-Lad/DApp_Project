@@ -7,14 +7,14 @@ class Content extends React.Component {
     return (
       <div>
         <p>Your account: {this.props.account}</p>
-        <p>Balance SGD: {this.props.balance}</p>
+        <p>Balance USD: {this.props.balance}</p>
         <p>Loyalty Points (LP): {this.props.points}</p>
         <p>Your Insured Flight: {this.props.flightId}</p>
         {this.props.insurances.length && (
           <Table
             insurances={this.props.insurances}
             activeInsurance={this.props.activeInsurance}
-            buyWithSGD={this.props.buyWithSGD}
+            buyWithUSD={this.props.buyWithUSD}
             buyWithLP={this.props.buyWithLP}
             points={this.props.points}
             claim={this.props.claim}
@@ -25,7 +25,7 @@ class Content extends React.Component {
             flightId={this.props.flightId}
             insurances={this.props.insurances}
             activeInsurance={this.props.activeInsurance}
-            buyWithSGD={this.props.buyWithSGD}
+            buyWithUSD={this.props.buyWithUSD}
             buyWithLP={this.props.buyWithLP}
             points={this.props.points}
             claim={this.props.claim}
