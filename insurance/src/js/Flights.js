@@ -14,7 +14,7 @@ class Flights extends React.Component {
   }
 
   componentDidMount() {
-    const api_key = 'PLACE_YOUR_API_KEY_HERE'
+    const api_key = 'c4ad02-f46eb3'
 
     axios
       .get(
@@ -23,7 +23,16 @@ class Flights extends React.Component {
           `&iataCode=JFK&type=departure`
       )
       .then(res => {
-        const data = res.data
+        var data = res.data
+        //test data, delete later
+        var dummy = {
+          airline: { name: 'dummy' },
+          arrival: { iataCode: 'dummy' },
+          departure: { iataCode: 'dummy' },
+          flight: { iataNumber: 'dummy' },
+          status: 'diverted'
+        }
+        data.push(dummy)
         this.setState({ flights: data, displayedFlights: data })
       })
       .catch(error => {
@@ -42,7 +51,7 @@ class Flights extends React.Component {
     })
   }
 
-  buttonUSD(insuranceId, points, amount, flightId) {
+  buttonUSD(insuranceId, points, amount, flightId, status) {
     return (
       <button
         type="submit"
@@ -53,7 +62,8 @@ class Flights extends React.Component {
               insuranceId,
               points.toNumber(),
               amount.toNumber(),
-              flightId
+              flightId,
+              status
             )
         }}>
         USD
@@ -61,14 +71,19 @@ class Flights extends React.Component {
     )
   }
 
-  buttonLP(insuranceId, costLP, flightId) {
+  buttonLP(insuranceId, costLP, flightId, status) {
     return (
       <button
         type="submit"
         class="btn btn-primary"
         onClick={click => {
           click.preventDefault(),
-            this.props.buyWithLP(insuranceId, costLP.toNumber(), flightId)
+            this.props.buyWithLP(
+              insuranceId,
+              costLP.toNumber(),
+              flightId,
+              status
+            )
         }}>
         LP
       </button>
@@ -95,9 +110,11 @@ class Flights extends React.Component {
     )
   }
 
-  buttonArea(element, flightId, status, column ) {
-    let delayed = [status].includes(('incident' || 'diverted' || 'unknown'))
-    let cancelled = (status === 'cancelled')
+  buttonArea(element, flightId, status, column) {
+    var delayed = ['incident', 'diverted', 'unknown']
+    var delayedFlag = delayed.some(term => status === term)
+    let cancelled = status === 'cancelled'
+
     return (
       <td>
         {!this.props.activeInsurance
@@ -105,11 +122,12 @@ class Flights extends React.Component {
               element.insuranceId,
               element.awardLP,
               element.costUSD,
-              flightId
+              flightId,
+              status
             )
           : null}
         {this.props.points >= element.costLP
-          ? this.buttonLP(element.insuranceId, element.costLP, flightId)
+          ? this.buttonLP(element.insuranceId, element.costLP, flightId, status)
           : null}
         {this.props.activeInsurance &&
         this.props.flightId == flightId &&
@@ -118,7 +136,7 @@ class Flights extends React.Component {
           ? this.buttonClaim(
               element.insuranceId,
               this.props.activeInsurance,
-              delayed,
+              delayedFlag,
               cancelled,
               flightId
             )
@@ -130,7 +148,7 @@ class Flights extends React.Component {
           ? this.buttonClaim(
               element.insuranceId,
               this.props.activeInsurance,
-              delayed,
+              delayedFlag,
               cancelled,
               flightId
             )

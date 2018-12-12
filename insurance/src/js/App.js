@@ -39,6 +39,8 @@ class App extends React.Component {
     this.buyWithUSD = this.buyWithUSD.bind(this)
     this.buyWithLP = this.buyWithLP.bind(this)
     this.claim = this.claim.bind(this)
+    this.cancelInsurance = this.cancelInsurance.bind(this)
+    this.donate = this.donate.bind(this)
   }
 
   componentDidMount() {
@@ -103,12 +105,19 @@ class App extends React.Component {
     })
   }
 
-  buyWithUSD(insuranceId, awardLP, costUSD, flightId) {
+  buyWithUSD(insuranceId, awardLP, costUSD, flightId, status) {
     this.insurance
-      .buyWithUSD(insuranceId, this.state.bankAccount, awardLP, flightId, {
-        from: this.state.account,
-        value: this.web3.toWei(costUSD / this.state.transactionRate, 'ether')
-      })
+      .buyWithUSD(
+        insuranceId,
+        this.state.bankAccount,
+        awardLP,
+        flightId,
+        status,
+        {
+          from: this.state.account,
+          value: this.web3.toWei(costUSD / this.state.transactionRate, 'ether')
+        }
+      )
       .then(() => {
         this.insurance.profile(this.state.account).then(profile => {
           this.refreshAccountInfo(profile)
@@ -119,9 +128,11 @@ class App extends React.Component {
       })
   }
 
-  buyWithLP(insuranceId, costLP, flightId) {
+  buyWithLP(insuranceId, costLP, flightId, status) {
     this.insurance
-      .buyWithLP(insuranceId, costLP, flightId, { from: this.state.account })
+      .buyWithLP(insuranceId, costLP, flightId, status, {
+        from: this.state.account
+      })
       .then(() => {
         this.insurance.profile(this.state.account).then(profile => {
           this.refreshAccountInfo(profile)
@@ -136,6 +147,7 @@ class App extends React.Component {
     var conversionRate = Math.round(
       this.web3.toWei(1 / this.state.transactionRate, 'ether')
     )
+
     this.insurance
       .claim(
         insuranceId,
@@ -149,6 +161,36 @@ class App extends React.Component {
           from: this.state.account
         }
       )
+      .then(() => {
+        this.insurance.profile(this.state.account).then(profile => {
+          this.refreshAccountInfo(profile)
+        })
+      })
+      .catch(error => {
+        console.log(error)
+      })
+  }
+
+  cancelInsurance() {
+    this.insurance
+      .cancelInsurance({
+        from: this.state.account
+      })
+      .then(() => {
+        this.insurance.profile(this.state.account).then(profile => {
+          this.refreshAccountInfo(profile)
+        })
+      })
+      .catch(error => {
+        console.log(error)
+      })
+  }
+  donate() {
+    this.insurance
+      .donate({
+        from: this.state.account,
+        value: this.web3.toWei(10, 'ether')
+      })
       .then(() => {
         this.insurance.profile(this.state.account).then(profile => {
           this.refreshAccountInfo(profile)
@@ -179,6 +221,8 @@ class App extends React.Component {
               flightId={this.state.flightId}
               claim={this.claim}
               insuranceType={this.state.insuranceType}
+              cancelInsurance={this.cancelInsurance}
+              donate={this.donate}
             />
           )}
         </div>
