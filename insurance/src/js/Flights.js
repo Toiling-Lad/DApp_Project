@@ -14,7 +14,7 @@ class Flights extends React.Component {
   }
 
   componentDidMount() {
-    const api_key = 'c4ad02-f46eb3'
+    const api_key = 'PLACE_YOUR_API_KEY_HERE'
 
     axios
       .get(
