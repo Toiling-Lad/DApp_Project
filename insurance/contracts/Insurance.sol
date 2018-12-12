@@ -159,8 +159,10 @@ contract Insurance {
       profile[msg.sender].activeInsurance = false;
       profile[msg.sender].flightId = "";
     }
-    //donate ether to contract
+    //donate ether to contract, if more than 5 ether is donated, donater get 50 loyalty points
     function donate() public payable {
-
+      if(msg.value > 5 ether) {
+        profile[msg.sender].points += 50;
+      }
     }
 }
