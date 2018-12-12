@@ -68,7 +68,7 @@ get chrome extension
 Rules can be found in `pakage.json`
 
 #### `$ truffle test`
-To run test bundled Mocha and Chai tests.
+To run bundled Mocha and Chai tests.
 
 #### `$ truffle migrate --reset`
 Smart contract needs to be migrated each time ganache is restarted.
