@@ -14,13 +14,13 @@ Flight delay/cancellation insurance Dapp
 
 Dapp manages insurance for travelers. Through a web front-end, traveler is able to:
 
-- Buy insurance submitting legitimate ticket evidence. Static prices are $30 or 150 loyalty points when round-trip tickets, $20 or 100 points when one-way ticket.
+- Buy insurance. Static prices are $30 or 150 loyalty points when round-trip tickets, $20 or 100 points when one-way ticket.
 - Payment can be made by Metamask.
 - Loyalty program. Every time a traveler buys insurance, he/she gets points: 30 points for a round trip ticket insurance, and 10 points otherwise.
 - Claim money back under following rules. Only the traveler triggers this action.
   - If flight only delayed, the traveler gets $200
   - If flights canceled, the traveler receives $5,000
-  - If a traveler got money when the flight was delayed but it turns out to be canceled, he/she can get the remainder SGD$4,800.
+  - If a traveler got money when the flight was delayed but it turns out to be canceled, he/she can get the remainder $4,800.
 
 The Dapp performs the following tasks automatically.
 
