@@ -30,7 +30,7 @@ class Flights extends React.Component {
           arrival: { iataCode: 'dummy' },
           departure: { iataCode: 'dummy' },
           flight: { iataNumber: 'dummy' },
-          status: 'diverted'
+          status: 'scheduled'
         }
         data.push(dummy)
         this.setState({ flights: data, displayedFlights: data })
@@ -126,7 +126,7 @@ class Flights extends React.Component {
               status
             )
           : null}
-        {this.props.points >= element.costLP
+        {this.props.points >= element.costLP && !this.props.activeInsurance
           ? this.buttonLP(element.insuranceId, element.costLP, flightId, status)
           : null}
         {this.props.activeInsurance &&
