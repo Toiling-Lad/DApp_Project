@@ -30,7 +30,7 @@ class Flights extends React.Component {
           arrival: { iataCode: 'dummy' },
           departure: { iataCode: 'dummy' },
           flight: { iataNumber: 'dummy' },
-          status: 'cancelled'
+          status: 'diverted'
         }
         data.push(dummy)
         this.setState({ flights: data, displayedFlights: data })
