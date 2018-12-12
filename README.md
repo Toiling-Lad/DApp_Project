@@ -42,7 +42,7 @@ The Dapp performs the following tasks automatically.
 Get the project on your computer and go inside the project directory.
 
 ```
-$ cd election
+$ cd insurance
 $ npm install
 ```
 
